@@ -1,6 +1,3 @@
-// If deployed, use the deployed database. Otherwise use the local mongoHeadlines database
-// var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
-
 // // Set mongoose to leverage built in JavaScript ES6 Promises
 // // Connect to the Mongo DB
 // mongoose.Promise = Promise;
@@ -8,88 +5,78 @@
 
 // Dependencies
 var express = require("express");
-var mongojs = require("mongojs");
+var mongoose = require("mongoose");
+// var logger = require("morgan");
+var exphbs = require("express-handlebars");
+var bodyParser = require("body-parser");
 // Require request and cheerio. This makes the scraping possible
-var request = require("request");
 var axios = require("axios");
 var cheerio = require("cheerio");
-
+var db = require("./models");
+var PORT = 8080;
 // Initialize Express
 var app = express();
+// app.use(logger("dev"));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use( express.static('public'));
+app.use(express.static("views"));
+app.engine("handlebars", exphbs({ defaultLayout: "main" }));
+app.set("view engine", "handlebars");
 
 // Database configuration
-var databaseUrl = "scraper";
-var collections = ["scrapedData"];
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoScraper2";
+mongoose.connect(MONGODB_URI);
 
-// Hook mongojs configuration to the db variable
-var db = mongojs(databaseUrl, collections);
-db.on("error", function(error) {
-  console.log("Database Error:", error);
-});
 
 // Main route (simple Hello World Message)
 app.get("/", function(req, res) {
-  res.send("Hello world");
+  res.render("home");
 });
 
 // Retrieve data from the db
-app.get("/saved", function(req, res) {
+app.get("/all", function(req, res) {
+  // console.log("in all");
 //   // Find all results from the scrapedData collection in the db
-  db.scrapedData.find({}, function(error, found) {
-//     // Throw any errors to the console
-    if (error) {
-      console.log(error);
-    }
-//     // If there are no errors, send the data to the browser as json
-    else {
-      res.json(found);
-    }
+  db.Article.find({})
+  .then((dbArticle)=>{
+    // console.log("article returned", dbArticle);
+    res.render("home", {dbArticle: dbArticle})
+  })
+  .catch((err)=>{
+    res.json(err);
   });
 });
 
 // Scrape data from one site and place it into the mongodb db
 app.get("/scraped", function(req, res) {
-//   // Make a request for the news section of `ycombinator`
-  request("https://www.reddit.com/r/webdev/", function(error, response, html) {
-//     // Load the html body from request into cheerio
-if(error){
-    throw error;
-} 
-    var $ = cheerio.load(html);
-//     // For each element with a "title" class
-    $(".title").each(function(i, element) {
-//       // Save the text and href of each link enclosed in the current element
-      var title = $(element).children("a").text();
-      var link = $(element).children("a").attr("href");
-    //   var image = $(element).children("a").attr("img");
-//       // If this found element had both a title and a link
-      if (title && link ) {
-//         // Insert the data in the scrapedData db
-        db.scrapedData.insert({
-          title: title,
-          link: link
-        //   image: image
-        },
-        function(err, inserted) {
-          if (err) {
-//             // Log the error if one is encountered during the query
-            console.log(err);
-          }
-          else {
-//             // Otherwise, log the inserted data
-            console.log(inserted);
-          }
-        });
-      }
+axios.get("https://www.reddit.com/r/webdev").then(function (response) {
+  var $ = cheerio.load(response.data);
+    // For each element with a "title" class
+    $("p.title").each(function(i, element) {
+      // Save the text and href of each link enclosed in the current element
+      var result = {};
+      result.title = $(element).text();
+      result.link = $(element).children().attr("href");
+      // If this found element had both a title and a link
+      db.Article.create(result)
+      .then ((dbArticle)=>{
+        // console.log("article", dbArticle);
+      })
+      .catch((err)=>{
+        return res.json(err)
+
     });
   });
+  res.redirect("/")
+})
+.catch((err) => {
+  return res.json(err)
 
-//   // Send a "Scrape Complete" message to the browser
-  res.send("Scrape Complete");
+});
 });
 
 
-// Listen on port 3000
-app.listen(3000, function() {
-  console.log("App running on port 3000!");
+app.listen(PORT, function() {
+  console.log("http://localhost:"+PORT);
 });
