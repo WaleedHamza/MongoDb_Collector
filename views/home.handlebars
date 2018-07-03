@@ -9,10 +9,13 @@
                       <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
                     </li>
                     <li class="nav-item">
-                      <a class="nav-link" href="/all">Saved Articles</a>
+                      <a class="nav-link" href="/saved">Saved Articles</a>
                     </li>
                     <li class="nav-item">
-                      <a class="nav-link" href="/scraped"><button type="button" class="btn btn-warning" id="grabBtn" >Grab Data</button></a>
+                      <a class="nav-link" href="/scraped" id="grabBtn" >Grab Data</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="/all">JSON Body</a>
                     </li>
                   </ul>
                 </div>
@@ -26,17 +29,18 @@
                   </div>
 
                   <div  id="results" class="container">
-                    <h1>Results</h1>
+                    {{!-- <h1>Results</h1> --}}
+                    
                     {{#each dbArticle}}
+                    <div class="container">
                       <div class="article">
-                        <div class="title"><a >{{title}}</a></div>
-                        <div class="link"><a href={{dbArticle}}>View Article</a></div>
-                        {{!-- <button class="saveBtn">Save Article</button> --}}
+                        <div class="title"><a ><h4>{{title}}</h4></a></div>
+                        {{!-- <p>{{this.comment}}</p> --}}
+                        <div class="actionBtns">
+                          <button class="link btn btn-link"><a href="https://www.reddit.com{{this.link}}" target="_blank">View Article</a></button>
+                          <button class="saveBtn btn btn-secondary btn-sm" data-id={{this.id}}><a>Save Article</a></button>
+                        </div>
+                        </div>
                       </div>
-
-                          {{!-- <div id="notes">
-                            <h1>Notes</h1>
-                          </div> --}}
+                      {{/each}}
                        </div >
-                    {{/each}}
-                   

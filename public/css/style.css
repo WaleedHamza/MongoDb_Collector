@@ -1,3 +1,44 @@
 body{
-    background-color: teal;
+    /* background-color: teal; */
 }
+
+.navbarNav{
+    margin-left: 0px;
+    
+}
+.jumbotron{
+    text-align: left;
+    background-image: url('http://www.indexengines.com/images/slider/home-page-banner3.png');
+    color: white;
+    text-shadow: 5px 5px 5px black;
+}
+
+#results{
+    display: flex;
+    align-content: center;
+    flex-direction: column;
+}
+.article{
+    padding: 20px;
+    margin: 0 auto;
+    margin-bottom: 25px;
+    width: 70%;
+    border: 1px solid darkgrey;
+    border-radius: 5px;
+    box-shadow: -5px 5px 5px grey;
+
+}
+
+.title{
+    position: relative;
+    text-align: center;
+    padding: 5px;
+}
+.actionBtns{
+    display: flex;
+    align-content: space-between;
+}
+.link, .saveBtn {
+margin: 0 auto;
+}
+

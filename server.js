@@ -30,17 +30,25 @@ mongoose.connect(MONGODB_URI);
 
 
 // Main route (simple Hello World Message)
-app.get("/", function(req, res) {
-  res.render("home");
+// app.get("/", function(req, res) {
+//   res.render("home");
+// });
+
+app.get('/all',function (req, res){
+  db.Article.find({}).then((dbArticles)=>{
+    res.send({dbArticles})
+  }).catch((err)=>{
+    res.json(err);
+  });
 });
 
 // Retrieve data from the db
-app.get("/all", function(req, res) {
+app.get("/", function(req, res) {
   // console.log("in all");
 //   // Find all results from the scrapedData collection in the db
   db.Article.find({})
   .then((dbArticle)=>{
-    // console.log("article returned", dbArticle);
+    // console.log("article returned", {dbArticle : dbArticle});
     res.render("home", {dbArticle: dbArticle})
   })
   .catch((err)=>{
@@ -58,6 +66,7 @@ axios.get("https://www.reddit.com/r/webdev").then(function (response) {
       var result = {};
       result.title = $(element).text();
       result.link = $(element).children().attr("href");
+      // result.comment = $(element).children('p').text();
       // If this found element had both a title and a link
       db.Article.create(result)
       .then ((dbArticle)=>{
@@ -70,11 +79,11 @@ axios.get("https://www.reddit.com/r/webdev").then(function (response) {
   });
   res.redirect("/")
 })
-.catch((err) => {
-  return res.json(err)
+});
 
-});
-});
+app.get("/saved", function(req, res) {
+    res.render("saved");
+  });
 
 
 app.listen(PORT, function() {
