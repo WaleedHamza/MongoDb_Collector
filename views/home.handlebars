@@ -28,19 +28,30 @@
                     </div>
                   </div>
 
-                  <div  id="results" class="container">
-                    {{!-- <h1>Results</h1> --}}
-                    
+<div class="modal fade" id="articleSaveModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <h1>Article Saved!</h1>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+                  <div  id="results" class="container">                    
                     {{#each dbArticle}}
                     <div class="container">
                       <div class="article">
                         <div class="title"><a ><h4>{{title}}</h4></a></div>
-                        {{!-- <p>{{this.comment}}</p> --}}
                         <div class="actionBtns">
                           <button class="link btn btn-link"><a href="https://www.reddit.com{{this.link}}" target="_blank">View Article</a></button>
-                          <button class="saveBtn btn btn-secondary btn-sm" data-id={{this.id}}><a>Save Article</a></button>
+                          <button class="saveBtn btn btn-secondary btn-sm" data-id={{this.id}} data-toggle="modal" data-target="#articleSaveModal"><a>Save Article</a></button>
                         </div>
                         </div>
                       </div>
                       {{/each}}
-                       </div >
+                    </div >
