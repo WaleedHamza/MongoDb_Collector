@@ -23,20 +23,17 @@ $(document).on('click', ".saveBtn", function(){
     console.log('getting article id :'+thisId);
 
     $.ajax({
-        method: "PUT",
-        url: "/all/" + thisId,
-      data: {saved: true}
+        method: "POST",
+        url: "/saved",
+        data: {
+            saved: true,
+            articleid : thisId
+    },
     })
+
     .then((data)=>{
         console.log('inside the ajax call app.js' + data)
-      //   $('#notes').append("<h2>" + data.title + "</h2>");
-      //   $("#notes").append("<input id='titleinput' name='title' >");
-      //   $("#notes").append("<textarea id='bodyinput' name='body'></textarea>");
-      // $("#notes").append("<button data-id='" + data._id + "' id='savenote'>Save Note</button>");
-      // if (data.note) {
-      //   $("#titleinput").val(data.note.title);
-      //   $("#bodyinput").val(data.note.body);
-      // }
+
     })
 })
 

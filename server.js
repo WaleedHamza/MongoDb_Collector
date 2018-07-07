@@ -98,6 +98,14 @@ app.get("/saved", function(req, res) {
     res.render("saved");
   });
 
+  app.post("/saved", function(req, res) {
+    // db.Article.create(req.body)
+    console.log(req.body)
+    // .then ((dbArticle)=>{
+    //   // console.log("article", dbArticle);
+    // })
+    res.render("saved");
+  });
 
 app.listen(PORT, function() {
   console.log("http://localhost:"+PORT);
