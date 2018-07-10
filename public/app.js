@@ -9,24 +9,24 @@ $('#myModal').on('shown.bs.modal', ()=> {
 
 
 $(document).on('click', ".saveBtn", function(){
-    $('#notes').empty();
     var thisId = $(this).attr('data-id');
     console.log('getting article id :'+thisId);
 
     $.ajax({
         method: "POST",
-        url: "/saved",
-        data: {
-            saved: true,
-            articleid : thisId
-    },
-    })
+        // url: thisId,
+        url: "/all/" + thisId,
 
+        data: {
+            // articleId: thisId,
+            title: "Beginner Questions - June 15, 2018 (self.webdev)'" }
+
+    })
     .then((data)=>{
         console.log('inside the ajax call app.js' + data)
 
     })
-})
+});
 
 
 // $(document).on("click", "#saveNote", function() {

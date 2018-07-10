@@ -9,7 +9,7 @@
           <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/saved">Saved Articles</a>
+          <a class="nav-link" href="/saved" id='savedPage'>Saved Articles</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="/scraped" id="grabBtn" >Grab Data</a>
@@ -47,6 +47,7 @@
       <div class="container">
         <div class="article">
           <div class="title"><a ><h4>{{title}}</h4></a></div>
+          <div>Article id : {{this._id}}</div>
             <div class="actionBtns">
               <button class="link btn btn-link"><a href="https://www.reddit.com{{this.link}}" target="_blank">View Article</a></button>
               <button class="saveBtn btn btn-secondary btn-sm" data-id={{this.id}} data-toggle="modal" data-target="#articleSaveModal"><a>Save Article</a></button>

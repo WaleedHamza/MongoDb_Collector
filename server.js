@@ -15,7 +15,7 @@ var bodyParser = require("body-parser");
 var axios = require("axios");
 var cheerio = require("cheerio");
 var db = require("./models");
-var PORT = 8080;
+var PORT = 8081;
 
 // Initialize Express
 var app = express();
@@ -28,16 +28,10 @@ app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
 // Database configuration
-var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoScraper2";
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoScraper";
 mongoose.connect(MONGODB_URI);
 
-
-
-// Main route (simple Hello World Message)
-// app.get("/", function(req, res) {
-//   res.render("home");
-// });
-
+//json body route
 app.get('/all',function (req, res){
   db.Article.find({}).then((dbArticles)=>{
     res.send({dbArticles})
@@ -49,13 +43,11 @@ app.get('/all',function (req, res){
 // Retrieve data from the db
 
 app.get("/", function(req, res) {
-  // console.log("in all");
-//   // Find all results from the scrapedData collection in the db
+  // Find all results from the scrapedData collection in the db
   db.Article.find({})
   .then((dbArticle)=>{
     // console.log("article returned", {dbArticle : dbArticle});
     res.render("home", {dbArticle: dbArticle})
-
   })
   .catch((err)=>{
     res.json(err);
@@ -64,23 +56,26 @@ app.get("/", function(req, res) {
 
 // Scrape data from one site and place it into the mongodb db
 app.get("/scraped", function(req, res) {
+  // console.log("in scraped")
 axios.get("https://www.reddit.com/r/webdev").then(function (response) {
 
     // Load the html body from request into cheerio
 
   var $ = cheerio.load(response.data);
+
     // For each element with a "title" class
     $("p.title").each(function(i, element) {
       // Save the text and href of each link enclosed in the current element
       var result = {};
       result.title = $(element).text();
       result.link = $(element).children().attr("href");
+      console.log(" pre result",result);
 
       // result.comment = $(element).children('p').text();
       // If this found element had both a title and a link
       db.Article.create(result)
       .then ((dbArticle)=>{
-        // console.log("article", dbArticle);
+        console.log("article", dbArticle);
 
       })
       .catch((err)=>{
@@ -88,24 +83,34 @@ axios.get("https://www.reddit.com/r/webdev").then(function (response) {
 
     });
   });
-
   res.redirect("/")
 })
-
 });
 
 app.get("/saved", function(req, res) {
-    res.render("saved");
+  // Find all results from the scrapedData collection in the db
+  db.Article.find({saved : true})
+  .then((dbArticle)=>{
+    // console.log("article returned", {dbArticle : dbArticle});
+    res.render("saved", {dbArticle: dbArticle})
+  })
+  .catch((err)=>{
+    res.json(err);
+  });
+});
+
+  app.post("/all/:id", function (req, res){
+    // app.post("/all", function (req, res){
+    // console.log(req,res)
+    console.log("in post all", req.body)
+    db.Article.findOneAndUpdate({ _id: req.params.id }, {$set: req.body}, function(err, data){
+      if (err) throw err;
+      console.log("inside the server put Method", data);
+      res.sendStatus(200);
+    })
   });
 
-  app.post("/saved", function(req, res) {
-    // db.Article.create(req.body)
-    console.log(req.body)
-    // .then ((dbArticle)=>{
-    //   // console.log("article", dbArticle);
-    // })
-    res.render("saved");
-  });
+
 
 app.listen(PORT, function() {
   console.log("http://localhost:"+PORT);
