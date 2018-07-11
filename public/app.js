@@ -17,10 +17,8 @@ $(document).on('click', ".saveBtn", function(){
         // url: thisId,
         url: "/all/" + thisId,
 
-        data: {
-            // articleId: thisId,
-            title: "Beginner Questions - June 15, 2018 (self.webdev)'" }
-
+        data: {saved: "true" }
+            
     })
     .then((data)=>{
         console.log('inside the ajax call app.js' + data)
