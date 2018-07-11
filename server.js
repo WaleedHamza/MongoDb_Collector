@@ -64,18 +64,15 @@ axios.get("https://www.reddit.com/r/webdev").then(function (response) {
   var $ = cheerio.load(response.data);
 
     // For each element with a "title" class
-    $("p.title").each(function(i, element) {
+    $(".scrollerItem").each(function(i, element) {
       // Save the text and href of each link enclosed in the current element
       var result = {};
-      result.title = $(element).text();
-      result.link = $(element).children().attr("href");
-      console.log(" pre result",result);
-
-      // result.comment = $(element).children('p').text();
+      result.title = $(element).find("h2").text();
+      result.link = $(element).find("[data-click-id='timestamp']").attr("href");
       // If this found element had both a title and a link
       db.Article.create(result)
       .then ((dbArticle)=>{
-        console.log("article", dbArticle);
+        // console.log("article", dbArticle);
 
       })
       .catch((err)=>{
