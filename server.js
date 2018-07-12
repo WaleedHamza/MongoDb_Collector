@@ -15,7 +15,7 @@ var bodyParser = require("body-parser");
 var axios = require("axios");
 var cheerio = require("cheerio");
 var db = require("./models");
-var PORT = 8081;
+var PORT = 8080;
 
 // Initialize Express
 var app = express();
@@ -41,7 +41,6 @@ app.get('/all',function (req, res){
 });
 
 // Retrieve data from the db
-
 app.get("/", function(req, res) {
   // Find all results from the scrapedData collection in the db
   db.Article.find({})
@@ -72,8 +71,6 @@ axios.get("https://www.reddit.com/r/webdev").then(function (response) {
       // If this found element had both a title and a link
       db.Article.create(result)
       .then ((dbArticle)=>{
-        // console.log("article", dbArticle);
-
       })
       .catch((err)=>{
         return res.json(err)
@@ -88,7 +85,6 @@ app.get("/saved", function(req, res) {
   // Find all results from the scrapedData collection in the db
   db.Article.find({saved : true})
   .then((dbArticle)=>{
-    // console.log("article returned", {dbArticle : dbArticle});
     res.render("saved", {dbArticle: dbArticle})
   })
   .catch((err)=>{
@@ -96,16 +92,58 @@ app.get("/saved", function(req, res) {
   });
 });
 
+// Route to change the save boolean value
   app.post("/all/:id", function (req, res){
-    // app.post("/all", function (req, res){
-    // console.log(req,res)
     console.log("in post all", req.body)
     db.Article.findOneAndUpdate({ _id: req.params.id }, {$set: req.body}, function(err, data){
       if (err) throw err;
       console.log("inside the server put Method", data);
       res.sendStatus(200);
-    })
+    });
   });
+
+  //Route to add notes to the articles 
+  app.post("/notes", function (req, res){
+    console.log("inside app.post /note", req.body)
+    db.Note.create({
+      note: req.body.note
+    })
+    .then( function(dbNote){
+      return db.Article.findOneAndUpdate({_id:req.body.noteId}, {$push: {note: dbNote}}, {new: true})
+    })
+    .then( function (dbArticle){
+      res.json(dbArticle);
+    })
+    .catch( function (error){
+      res.json(error)
+    });
+  });
+
+  //Route to delete note
+  // app.delete("/note/:id", function(req, res){
+  //   db.Note.remove({_id:req.params.id}, function(error, data){
+  //     if (error) throw error;
+  //     console.log("Note removed", data)
+  //     res.sendStatus(200);
+  //   });
+  // })
+
+//Route to populate the note to the article 
+  app.get("/all/:id", function (req, res){
+    db.Article.findOne({_id: req.params.id})
+    .populate("note")
+    .exec(function(err, dbArticle){
+      if (err) throw err;
+      res.render('saved', {dbArticle: dbArticle
+      });
+      console.log("inside the populate method", dbArticle)
+      console.log("inside the populate method", (dbArticle.note[0].note))
+    })
+    // .catch( function(error){
+    //   res.json(error);
+    // })
+  });
+
 
 
 

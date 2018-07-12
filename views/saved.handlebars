@@ -11,9 +11,6 @@
                     <li class="nav-item">
                       <a class="nav-link" href="/saved">Saved Articles</a>
                     </li>
-                    {{!-- <li class="nav-item">
-                      <a class="nav-link"  href="/scraped"><button type="button" class="btn btn-warning" id="grabBtn">Grab Data</button></a>
-                    </li> --}}
                   </ul>
                 </div>
               </nav>
@@ -25,15 +22,54 @@
                     </div>
                   </div>
 
+
+
                   <div class="conatiner savedArticles">
                     {{#each dbArticle}}
                       {{#if this.saved}}
                         <div class="container">
+
+                          <div class="modal fade" id="articleComment" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                              <div class="modal-content">
+                                <div class="modal-body">
+                                  <h4>Add Notes</h4>
+                                  <form>
+                                    <div class="form-group">
+                                      <label for="message-text" class="col-form-label">Note Content</label>
+                                      <textarea class="form-control" id="bodyInput"></textarea>
+                                    </div>
+                                    <div>I dont get the notes if I use this.note{{#each note}}<p>{{this._id}}</p>{{/each}}</div>
+                                  </form>
+                                  </div>
+                                <div class="modal-footer">
+                                  <button type="button" class="saveNote btn btn-success" data-id={{this.id}}>Save Note</button>
+                                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="modal fade" id="articleDeletedModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                              <div class="modal-content">
+                                <div class="modal-body">
+                                  <h1>Article Deleted!</h1>
+                                </div>
+                                <div class="modal-footer">
+                                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
                           <div class="article">
                             <div class="title"><a ><h4>{{title}}</h4></a></div>
                               <div class="actionBtns">
-                                <button class="link btn btn-link"><a href="https://www.reddit.com{{this.link}}" target="_blank">View Article</a></button>
-                                <button class="saveBtn btn btn-secondary btn-sm" data-id={{this.id}} data-toggle="modal" data-target="#articleSaveModal"><a>Add a Note</a></button>
+                                <button class="link btn btn-outline-link"><a href="https://www.reddit.com{{this.link}}" target="_blank">View Article</a></button>
+                                <button class="viewNotesBtn btn btn-outline-info btn-sm" data-id={{this.id}}><a>View Notes</a></button>
+                                <button class="deleteNoteBtn btn btn-outline-danger btn-sm" data-id={{this.id}} data-toggle="modal" data-target="articleDeletedModal"><a>Delete Article</a></button>
+                                <button class="addNoteBtn btn btn-outline-secondary btn-sm" data-id={{this.id}} data-toggle="modal" data-target="#articleComment"><a>Add a Note</a></button>
                               </div>
                             </div>
                           </div>
